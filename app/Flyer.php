@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Photo;
 
 class Flyer extends Model
 {
@@ -17,11 +18,11 @@ class Flyer extends Model
        'description'
     ];
 
-    public function scopeLocatedAT($query,$zip,$street)
+    public static function LocatedAT($zip,$street)
     {
        $street = str_replace('-', ' ', $street);
 
-       return $query->where(compact('zip','street'));
+       return static::where(compact('zip','street'))->first();
     }
 
     public function getPriceAttribute($price)
@@ -29,8 +30,16 @@ class Flyer extends Model
       return '$' .number_format($price);
     }
 
+
+    public function addPhoto(Photo $photo)
+    {
+       $this->photos()->save($photo);
+    }
+
     public function photos()
     {
        return $this->hasMany('App\Photo');
     }
+
+    
 }

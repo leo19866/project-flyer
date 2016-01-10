@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\FlyerRequest;
 use App\Http\Controllers\Controller;
 use App\Flyer;
+use App\Photo;
+
 
 class FlyersController extends Controller
 {
@@ -62,9 +64,23 @@ class FlyersController extends Controller
         
          //return Flyer::LocatedAt($zip ,$street)->first();
 
-        $flyer = Flyer::LocatedAt($zip ,$street)->first();
+        $flyer = Flyer::LocatedAt($zip ,$street);
        
         return view('flyers.show',compact('flyer'));
+    }
+
+
+    public function addPhoto($zip,$street,Request $request)
+    {
+       $this->validate($request,[
+          
+            'photo' => 'required|mimes:jpg,jpeg,png,bmp'
+        ]); 
+
+       $photo = Photo::fromForm($request->file('photo'));
+
+       Flyer::LocatedAt($zip ,$street)->addPhoto($photo);
+
     }
 
     /**
