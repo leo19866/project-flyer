@@ -9,12 +9,16 @@ use App\Flyer;
 use App\Photo;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+
 class FlyersController extends Controller
 {
    public function __construct()
    {
 
       $this->middleware('auth',['except'=>'show']);
+      
+
+      parent::__construct();
 
    }
 
@@ -85,9 +89,23 @@ class FlyersController extends Controller
             'photo' => 'required|mimes:jpg,jpeg,png,bmp'
         ]); 
 
+         $flyer = Flyer::LocatedAt($zip ,$street);
+
+       if ($flyer->user_id !== \Auth::id()) {
+
+           if($request->ajax()) {
+
+               return response(['message' =>'No Way'], 403); 
+           }
+           
+           flash('No way.');
+             
+           return redirect('/');
+       }
+
        $photo = $this->makePhoto($request->file('photo'));
 
-       Flyer::LocatedAt($zip ,$street)->addPhoto($photo);
+       $flyer ->addPhoto($photo);
 
     }
 
