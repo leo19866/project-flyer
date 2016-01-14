@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\FlyerRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\AuthorizesUsers;
 use App\Flyer;
 use App\Photo;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -12,6 +13,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FlyersController extends Controller
 {
+   use AuthorizesUsers;
+
    public function __construct()
    {
 
@@ -88,26 +91,21 @@ class FlyersController extends Controller
           
             'photo' => 'required|mimes:jpg,jpeg,png,bmp'
         ]); 
+    
 
-         $flyer = Flyer::LocatedAt($zip ,$street);
+       if (! $this->userCreateFlyer($request)) {
 
-       if ($flyer->user_id !== \Auth::id()) {
-
-           if($request->ajax()) {
-
-               return response(['message' =>'No Way'], 403); 
-           }
-           
-           flash('No way.');
-             
-           return redirect('/');
+            return $this->unauthorized($request);
        }
+
 
        $photo = $this->makePhoto($request->file('photo'));
 
-       $flyer ->addPhoto($photo);
+       Flyer::LocatedAt($zip ,$street) ->addPhoto($photo);
 
     }
+
+    
 
     public function makePhoto(UploadedFile $file)
     {
