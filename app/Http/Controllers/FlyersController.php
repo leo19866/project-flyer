@@ -90,9 +90,13 @@ class FlyersController extends Controller
        $this->validate($request,[
           
             'photo' => 'required|mimes:jpg,jpeg,png,bmp'
-        ]); 
-    
+        ]);
 
+       $photo = Photo::fromfile($request->file('photo'))->upload();
+
+       Flyer::LocatedAt($zip ,$street) ->addPhoto($photo);
+    
+    /*
        if (! $this->userCreateFlyer($request)) {
 
             return $this->unauthorized($request);
@@ -102,7 +106,7 @@ class FlyersController extends Controller
        $photo = $this->makePhoto($request->file('photo'));
 
        Flyer::LocatedAt($zip ,$street) ->addPhoto($photo);
-
+    */
     }
 
     

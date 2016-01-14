@@ -13,11 +13,53 @@ class Photo extends Model
 
     protected $fillable = ['path','name','thumbnail_path'];
 
-    protected $baseDir = 'images/photos';
+
+    protected $file;
     
     public function flyer()
     {
-    	return $this->belongsTo('App\Flyer');
+    	 return $this->belongsTo('App\Flyer');
+    }
+
+    public static function fromfile(UploadedFile $file)
+    {
+       $photo = new static;
+       
+       $photo->file = $file;
+
+     return $photo->fill([
+         'name'  => $photo->filename(),
+         'path'  => $photo->filepath(),
+         'thumbnail_path' => $photo->thumbnail_path()
+        ]);
+
+    }
+
+    public function filename()
+    {
+        $name = sha1(
+               time().$this->file->getClientOriginalName()
+          );
+          
+        $extension =  $this->file->getClientOriginalExtension();
+
+        return "{$name}.{$extension}";
+    }
+
+    public function filepath()
+    {
+       return $this->baseDir(). '/' . $this->filename();
+
+    }
+
+    public function baseDir()
+    {
+        return 'images/photos';
+    }
+
+    public function thumbnail_path()
+    {
+        return $this->baseDir(). '/tn-' .$this->filename(); 
     }
 
     public static function named($name)
@@ -27,18 +69,12 @@ class Photo extends Model
 
     } 
 
-    public function saveAs($name)
-    {
-      $this->name = sprintf("%s-%s",time(),$name);
-      $this->path = sprintf("%s/%s",$this->baseDir,$this->name);
-      $this->thumbnail_path =sprintf("%s/tn-%s",$this->baseDir,$this->name);
+    
 
-      return $this;
-    }
-
-    public function move(UploadedFile $file)
+    public function upload()
     {
-       $file->move($this->baseDir,$this->name);
+
+        $this->file->move($this->baseDir(),$this->filename());
 
         $this->makeThumbnail();
 
@@ -49,9 +85,9 @@ class Photo extends Model
 
     protected function makeThumbnail()
     {
-        Image::make($this->path)
+        Image::make($this->filepath())
          ->fit(200)
-         ->save($this->thumbnail_path);
+         ->save($this->thumbnail_path());
 
     }
 }
