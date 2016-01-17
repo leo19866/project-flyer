@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FlyersController extends Controller
 {
-   use AuthorizesUsers;
+   //use AuthorizesUsers;
 
    public function __construct()
    {
@@ -60,11 +60,16 @@ class FlyersController extends Controller
     public function store(FlyerRequest $request)
     {
        
-        Flyer::create($request->all());
+        $flyer = $this->user->publish(
+            
+            new Flyer($request->all())
+            
+            );
+
 
         flash()->success('success','Flyer successfully created !','success');
 
-        return redirect()->back();
+        return  redirect(flyer_path($flyer));
        
     }
 

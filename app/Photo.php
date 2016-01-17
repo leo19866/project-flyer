@@ -35,40 +35,28 @@ class Photo extends Model
 
     }
 
-    public function filename()
-    {
-        $name = sha1(
-               time().$this->file->getClientOriginalName()
-          );
-          
-        $extension =  $this->file->getClientOriginalExtension();
 
-        return "{$name}.{$extension}";
-    }
-
-    public function filepath()
-    {
-       return $this->baseDir(). '/' . $this->filename();
-
-    }
+    
 
     public function baseDir()
     {
         return 'images/photos';
     }
 
-    public function thumbnail_path()
+
+    public function setNameAttribute($name)
     {
-        return $this->baseDir(). '/tn-' .$this->filename(); 
+        $this->attributes['name'] = $name;
+
+        $this->attributes['path'] = $this->baseDir(). '/' . $name();  
+
+        $this->attributes['thumbnail_path'] = $this->baseDir(). '/tn-' . $name(); 
+
     }
 
-    public static function named($name)
-    {
-     
-       return (new static)->saveAs($name);
+   
 
-    } 
-
+   
     
 
     public function upload()
