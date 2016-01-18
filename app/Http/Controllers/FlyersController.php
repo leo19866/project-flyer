@@ -59,8 +59,7 @@ class FlyersController extends Controller
      */
     public function store(FlyerRequest $request)
     {
-       
-        $flyer = $this->user->publish(
+    	$flyer = $this->user->publish(
             
             new Flyer($request->all())
             

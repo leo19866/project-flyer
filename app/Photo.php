@@ -14,68 +14,47 @@ class Photo extends Model
     protected $fillable = ['path','name','thumbnail_path'];
 
 
-    protected $file;
     
     public function flyer()
     {
     	 return $this->belongsTo('App\Flyer');
     }
 
-    public static function fromfile(UploadedFile $file)
+
+    public function filename()
     {
-       $photo = new static;
-       
-       $photo->file = $file;
+        $name = sha1(
+               time().$this->file->getClientOriginalName()
+          );
+          
+        $extension =  $this->file->getClientOriginalExtension();
 
-     return $photo->fill([
-         'name'  => $photo->filename(),
-         'path'  => $photo->filepath(),
-         'thumbnail_path' => $photo->thumbnail_path()
-        ]);
-
+        return "{$name}.{$extension}";
     }
 
+    public function filepath()
+    {
+       return $this->baseDir(). '/' . $this->filename();
 
-    
+    }
 
     public function baseDir()
     {
         return 'images/photos';
     }
 
-
-    public function setNameAttribute($name)
+    public function thumbnail_path()
     {
-        $this->attributes['name'] = $name;
-
-        $this->attributes['path'] = $this->baseDir(). '/' . $name();  
-
-        $this->attributes['thumbnail_path'] = $this->baseDir(). '/tn-' . $name(); 
-
+        return $this->baseDir(). '/tn-' .$this->filename(); 
     }
 
-   
+    public static function named($name)
+    {
+     
+       return (new static)->saveAs($name);
 
-   
+    } 
+
     
 
-    public function upload()
-    {
-
-        $this->file->move($this->baseDir(),$this->filename());
-
-        $this->makeThumbnail();
-
-        return $this;
-
-
-    }
-
-    protected function makeThumbnail()
-    {
-        Image::make($this->filepath())
-         ->fit(200)
-         ->save($this->thumbnail_path());
-
-    }
 }

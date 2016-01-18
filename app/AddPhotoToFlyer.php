@@ -12,12 +12,14 @@ class AddPhotoToFlyer{
 
      protected $file;
 
-     public function __construct(Flyer $flyer,UploadedFile $file)
+     public function __construct(Flyer $flyer,UploadedFile $file,Thumbnail $thumbnail = null)
      {
 
      	$this->flyer = $flyer;
 
      	$this->file  = $file;
+
+        $this->thumbnail = $thumbnail ?: new Thumbnail;
 
 
      }
@@ -26,18 +28,24 @@ class AddPhotoToFlyer{
      public function save()
      {
      	
-     	$this->flyer->addphoto($this->makePhoto());
+     	$photo = $this->flyer->addPhoto($this->makePhoto());
 
+
+        $this->file->move($photo->baseDir(),$photo->name());
+
+        $this->thumbnail($photo->path,$photo->thumbnail_path);
+
+       
      }
 
 
-     public function makePhoto()
+     protected function makePhoto()
      {
 
      	return new Photo('name' => $this->makeFileName());
      }
 
-     public function makeFileName()
+     protected function makeFileName()
      {
         $name = sha1(
                time().$this->file->getClientOriginalName()
