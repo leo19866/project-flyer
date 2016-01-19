@@ -22,7 +22,7 @@ class PhotosController extends Controller
        $flyer = Flyer::LocatedAt($zip ,$street);
 
 
-       $photo = $request->file('photo'));
+       $photo = $request->file('photo');
        
 
        (new AddPhotoToFlyer($flyer,$photo))->save();       

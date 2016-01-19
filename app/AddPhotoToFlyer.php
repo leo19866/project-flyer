@@ -3,7 +3,7 @@
 
 namespace App;
 
-use use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class AddPhotoToFlyer{
  
@@ -30,10 +30,9 @@ class AddPhotoToFlyer{
      	
      	$photo = $this->flyer->addPhoto($this->makePhoto());
 
+        $this->file->move($photo->baseDir(),$photo->name);
 
-        $this->file->move($photo->baseDir(),$photo->name());
-
-        $this->thumbnail($photo->path,$photo->thumbnail_path);
+        $this->thumbnail->make($photo->path,$photo->thumbnail_path);
 
        
      }
@@ -42,7 +41,7 @@ class AddPhotoToFlyer{
      protected function makePhoto()
      {
 
-     	return new Photo('name' => $this->makeFileName());
+     	return new Photo(['name' => $this->makeFileName()]);
      }
 
      protected function makeFileName()

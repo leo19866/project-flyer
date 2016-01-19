@@ -8,9 +8,9 @@ class Thumbnail {
    
    public function make($src,$destination)
    {
-       Image::make($this->src)
+       Image::make($src)
          ->fit(200)
-         ->save($this->destination);
+         ->save($destination);
 
 
    }

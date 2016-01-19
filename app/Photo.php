@@ -21,31 +21,21 @@ class Photo extends Model
     }
 
 
-    public function filename()
-    {
-        $name = sha1(
-               time().$this->file->getClientOriginalName()
-          );
-          
-        $extension =  $this->file->getClientOriginalExtension();
-
-        return "{$name}.{$extension}";
-    }
-
-    public function filepath()
-    {
-       return $this->baseDir(). '/' . $this->filename();
-
-    }
-
     public function baseDir()
     {
         return 'images/photos';
     }
 
-    public function thumbnail_path()
+
+    public function setNameAttribute($name)
     {
-        return $this->baseDir(). '/tn-' .$this->filename(); 
+        $this->attributes['name'] = $name;
+
+        $this->path = $this->basedir().'/'.$name;
+
+        $this->thumbnail_path = $this->basedir().'/tn-'.$name; 
+
+
     }
 
     public static function named($name)

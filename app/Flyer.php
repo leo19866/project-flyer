@@ -27,13 +27,13 @@ class Flyer extends Model
 
     public function getPriceAttribute($price)
     {
-      return '$' .number_format($price);
+       return '$' .number_format($price);
     }
 
 
     public function addPhoto(Photo $photo)
     {
-       $this->photos()->save($photo);
+       return $this->photos()->save($photo);
     }
 
     public function photos()
@@ -51,9 +51,6 @@ class Flyer extends Model
        return $this->user_id == $user->id; 
     }
     
-    public function path()
-    {
-       return $this->zip .'/'. str_replace(' ', '-' , $this->street);
-    }
+  
     
 }
